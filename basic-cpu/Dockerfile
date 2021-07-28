@@ -34,7 +34,7 @@ COPY --from=builder /marian* /
 COPY --from=builder /model /model
 
 # With compression off make model files available at same location
-RUN if ! test "$COMPRESS_MODEL" = "ON"; then \
+RUN if test ! -f /model/model.tar.xz; then \
   ln -s /model /extracted-model; \
   fi
 
