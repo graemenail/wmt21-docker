@@ -1,5 +1,10 @@
 # wmt21-docker
 
+## !
+Pre-built `marian-decoder` should be built for the correct architecture:
+  - **CPU:** `icelake-server`
+  - **GPU:** `znver2`
+
 ## Variants
 ### basic-gpu
 Builds a docker for GPU usage.
