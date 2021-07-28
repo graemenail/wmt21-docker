@@ -4,4 +4,3 @@ if [[ ! -d /extracted-model ]]; then
 fi
 
 /bin/sh -c "$*"
-# exec "$@"
