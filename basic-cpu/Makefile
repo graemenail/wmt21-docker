@@ -14,9 +14,9 @@ IMAGE=wmt21_cpu
 all: $(IMAGE).tar.gz
 
 # Compress
-%.tar.gz: %.image
-	md5sum $< > $<.md5sum
-	tar zcvf $@ $< $<.md5sum README.md
+%.tar.gz: %.image README.md
+	sha512sum $< > $<.sha512sum
+	tar zcvf $@ $< $<.sha512sum README.md
 
 # Build Image
 $(IMAGE).image: Dockerfile marian* run.sh init.sh model/
