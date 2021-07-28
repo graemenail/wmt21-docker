@@ -5,7 +5,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends python3-minimal xz-utils \
     && apt clean && rm -rf /var/lib/apt/lists/*
 
-# Model
+
+# Build
 FROM base as builder
 # Marian
 COPY marian* /
