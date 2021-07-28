@@ -2,11 +2,18 @@ FROM ubuntu:20.04 as base
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-    numactl \
-    parallel \
-    python3-minimal \
-    xz-utils \
-  && apt clean && rm -rf /var/lib/apt/lists/*
+  numactl \
+  parallel \
+  python3-minimal \
+  xz-utils \
+  ;
+
+# User Scripts (init/requirements + aux)
+ADD script/ /script
+RUN chmod -Rv +x /script && /script/requirements.sh && rm -rf script/requirements.sh
+
+# Attempt cleanup
+RUN apt clean && rm -rf /var/lib/apt/lists/*
 
 # Prepare
 FROM base as builder
@@ -39,8 +46,8 @@ RUN if ! test "$COMPRESS_MODEL" = "ON"; then \
   fi
 
 # Runner
-ADD init.sh run.sh /
-RUN chmod +x /*.sh
+ADD run.sh /
+RUN chmod +x /run.sh
 
-ENTRYPOINT ["/init.sh"]
+ENTRYPOINT ["/script/init.sh"]
 CMD ["/run.sh", "GPU", "throughput"]
