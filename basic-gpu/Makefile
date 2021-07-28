@@ -28,7 +28,7 @@ test: test-cpu test-gpu
 test-cpu: $(IMAGE).image
 	docker load -i $<
 	sacrebleu -t wmt19 -l en-de --echo src \
-		| docker run -i --rm $(IMAGE) /run.sh CPU-1 throughout \
+		| docker run -i --rm $(IMAGE) /run.sh CPU-1 throughput \
 		| sacrebleu -t wmt19 -l en-de
 
 test-gpu: $(IMAGE).image
