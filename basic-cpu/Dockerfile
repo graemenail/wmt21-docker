@@ -19,14 +19,24 @@ RUN apt-get update \
 RUN strip marian*
 
 # Model
-ARG MODEL='model'
+ARG MODEL="model"
+ARG COMPRESS_MODEL="ON"
 COPY ${MODEL} /model
-RUN cd model && tar -cJf /model.tar.xz .
+
+# compress and tidy up (see /init.sh for decompression)
+RUN if test "$COMPRESS_MODEL" = "ON"; then \
+  cd model && tar --remove-files -cJf model.tar.xz *; \
+  fi
 
 # Deploy
 FROM base
 COPY --from=builder /marian* /
-COPY --from=builder /model.tar.xz /model/model.tar.xz
+COPY --from=builder /model /model
+
+# With compression off make model files available at same location
+RUN if ! test "$COMPRESS_MODEL" = "ON"; then \
+  ln -s /model /extracted-model; \
+  fi
 
 # Runner
 ADD init.sh run.sh /
