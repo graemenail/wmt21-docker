@@ -38,5 +38,5 @@ test-gpu: $(IMAGE).image
 		| sacrebleu -t wmt19 -l en-de
 
 clean:
-	rm -f *.image *.md5sum *.tar.gz
+	rm -f *.image *.sha512sum *.tar.gz
 	docker rmi -f $(IMAGE)
