@@ -1,5 +1,5 @@
 *
 !model
-!init.sh
+!script
 !run.sh
 !marian*
