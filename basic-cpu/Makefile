@@ -19,7 +19,7 @@ all: $(IMAGE).tar.gz
 	tar zcvf $@ $< $<.sha512sum README.md
 
 # Build Image
-$(IMAGE).image: Dockerfile marian* run.sh init.sh model/
+$(IMAGE).image: Dockerfile marian* run.sh script/init.sh script/requirements.sh model/
 	docker image build -t $(IMAGE) .
 	docker save $(IMAGE) > $@
 
