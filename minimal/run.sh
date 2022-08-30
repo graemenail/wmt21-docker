@@ -20,10 +20,10 @@ MARIAN_OPTIONS=(
   --skip-cost
   --quiet-translation
 
+  --gemm-type intgemm8
+  --intgemm-options precomputed-alpha all-shifted
+  
   #--transformer-head-dim 32
-  #--gemm-type intgemm8
-  #--intgemm-options all-shifted
-  #--intgemm-options shifted all-shifted
 )
 
 # Hardware
@@ -38,7 +38,7 @@ case $1 in
     )
     ;;
   "CPU-ALL")
-    BINARY="marian-parallel.sh 4 /marian-decoder-cpu"
+    BINARY="marian-parallel.sh 4 marian-decoder"
     MARIAN_OPTIONS+=(
       --cpu-threads 36 # spread across 4 workers, so 9 in practice
       --shortlist /extracted-model/lex.s2t.bin false
@@ -61,13 +61,13 @@ esac
 # Task
 case $2 in
   "latency")
-    MARIAN_OPTIONS+=(
+    MARIAN_OPTIONS+=( 
       --mini-batch 1
       --maxi-batch 1
     )
     ;;
   "throughput")
-    if test "$1" =~ "CPU-*"; then 
+    if test "${1:0:3}" = "CPU"; then
       MARIAN_OPTIONS+=(
         --mini-batch 32
         --maxi-batch 512
@@ -80,10 +80,10 @@ case $2 in
     fi
     ;;
   *)
-    echo "Not running..." >&2
+    echo "Unknown task..." >&2
     exit 1
     ;;
 esac
 
 # The tail part is to print only the wall time from the log output
-/$BINARY ${MARIAN_OPTIONS[@]} 2> >(tail -n1 >&2)
+$BINARY ${MARIAN_OPTIONS[@]} #2> >(tail -n1 >&2)

@@ -195,12 +195,14 @@ RUN cd model \
 # CMD ["/run.sh", "CPU-1", "latency"]
 
 FROM alpine:3.14
-RUN apk add --no-cache xz numactl bash
+RUN apk add --no-cache xz numactl-tools bash
 ARG MODEL='model'
 # COPY --from=model /model/*.xz /model/
 COPY model/*.xz /model/
-COPY run.sh marian-parallel.sh /
-RUN chmod +x *.sh
-COPY --from=builderparallel /opt/marian/qparallel /
-COPY --from=buildercpu /opt/marian/marian-decoder /
+COPY marian-parallel.sh /usr/local/bin
+COPY run.sh /
+COPY --from=builderparallel /opt/marian/qparallel /usr/local/bin/
+COPY --from=buildercpu /opt/marian/marian-decoder /usr/local/bin/
+RUN chmod +x /usr/local/bin/*
+RUN chmod +x /run.sh
 ENTRYPOINT ["/run.sh"]
