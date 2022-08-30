@@ -88,8 +88,8 @@ ARG MARIAN_CPU_ARCH="icelake-server"
 COPY preprocess/ /preprocess
 RUN --mount=type=cache,target=/preprocess/build rm -rf /preprocess/build/* \
     && cd /preprocess/build \
-    && CFLAGS="-pipe -static -Os" \
-       CXXFLAGS="-pipe -static -Os" \
+    && CFLAGS="-pipe -static -Os -lrt -Wl,--whole-archive -lpthread -Wl,--no-whole-archive" \
+       CXXFLAGS="-pipe -static -Os -lrt -Wl,--whole-archive -lpthread -Wl,--no-whole-archive" \
        cmake .. \
         -DBoost_USE_STATIC_LIBS=On\
         -DCMAKE_BUILD_TYPE=Release \
