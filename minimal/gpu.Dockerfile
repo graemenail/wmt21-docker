@@ -41,7 +41,7 @@ RUN mkdir -p /opt/marian && touch /opt/marian/ignore-me
 
 # Build marian for CPU
 FROM builder as buildermarian
-ARG MARIAN_CPU_ARCH="icelake-server"
+ARG MARIAN_CPU_ARCH="znver2"
 COPY marian-gpu marian-gpu
 RUN --mount=type=cache,target=/marian-gpu/build \
     cd marian-gpu \
@@ -64,6 +64,13 @@ RUN --mount=type=cache,target=/marian-gpu/build \
         -DUSE_DOXYGEN=OFF \
         -DUSE_MKL=ON \
         -DUSE_MPI=OFF \
+        -DCOMPILE_KEPLER=OFF \
+        -DCOMPILE_MAXWELL=OFF \
+        -DCOMPILE_PASCAL=OFF \
+        -DCOMPILE_VOLTA=OFF \
+        -DCOMPILE_TURING=OFF \
+        -DCOMPILE_AMPERE=ON \
+        -DCOMPILE_AMPERE_RTX=ON \
     && make -j2 marian_decoder marian_conv \
     && objcopy --only-keep-debug marian-decoder marian-decoder.dbg \
     && strip -s marian-decoder \
