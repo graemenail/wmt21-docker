@@ -27,8 +27,8 @@ case $1 in
     MARIAN_OPTIONS+=(
       --cpu-threads 1
       -m /extracted-model/model.intgemm.alphas.bin
-      --shortlist /extracted-model/lex.s2t.bin false
-      --workspace 512
+      --shortlist /extracted-model/lex.s2t.bin 100 100
+      --workspace ${MARIAN_WORKSPACE-512}
       --max-length-factor 2.5
       --gemm-type intgemm8
       --intgemm-options precomputed-alpha all-shifted
@@ -39,8 +39,8 @@ case $1 in
     MARIAN_OPTIONS+=(
       --cpu-threads ${THROUGHPUT_THREADS-36} # divided among the workers
       -m /extracted-model/model.intgemm.alphas.bin
-      --shortlist /extracted-model/lex.s2t.bin false
-      --workspace 512
+      --shortlist /extracted-model/lex.s2t.bin 100 100
+      --workspace ${MARIAN_WORKSPACE-512}
       --max-length-factor 2.5
       --gemm-type intgemm8
       --intgemm-options precomputed-alpha all-shifted
@@ -51,7 +51,7 @@ case $1 in
     MARIAN_OPTIONS+=(
       -m /extracted-model/model.npz
       --devices 0
-      --workspace 36000
+      --workspace ${MARIAN_WORKSPACE-36000}
       --max-length-factor 1.6
       --fp16
     )
@@ -69,13 +69,13 @@ case $2 in
   "throughput")
     if test "${1:0:3}" = "CPU"; then
       MARIAN_OPTIONS+=(
-        --mini-batch 32
-        --maxi-batch 512
+        --mini-batch ${MARIAN_MINI_BATCH-32}
+        --maxi-batch ${MARIAN_MAXI_BATCH-512}
       )
     else
       MARIAN_OPTIONS+=(
-        --mini-batch 768
-        --maxi-batch 2048
+        --mini-batch ${MARIAN_MINI_BATCH-768}
+        --maxi-batch ${MARIAN_MAXI_BATCH-2048}
       )
     fi
     ;;
