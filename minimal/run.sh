@@ -28,7 +28,7 @@ case $1 in
     MARIAN_OPTIONS+=(
       --cpu-threads 1
       --shortlist /extracted-model/lex.s2t.bin false
-      --workspace 128
+      --workspace 512
       --max-length-factor 2.5
       --gemm-type intgemm8
       --intgemm-options precomputed-alpha all-shifted
@@ -39,7 +39,7 @@ case $1 in
     MARIAN_OPTIONS+=(
       --cpu-threads 36 # spread across 4 workers, so 9 in practice
       --shortlist /extracted-model/lex.s2t.bin false
-      --workspace 128
+      --workspace 512
       --max-length-factor 2.5
       --gemm-type intgemm8
       --intgemm-options precomputed-alpha all-shifted
@@ -50,7 +50,7 @@ case $1 in
     MARIAN_OPTIONS+=(
       --devices 0
       --maxi-batch-sort src
-      --workspace 28000
+      --workspace 36000
       --max-length-factor 1.6
       --fp16
     )
@@ -73,8 +73,8 @@ case $2 in
       )
     else
       MARIAN_OPTIONS+=(
-        --mini-batch 1240
-        --maxi-batch 1000
+        --mini-batch 768
+        --maxi-batch 2048
       )
     fi
     ;;

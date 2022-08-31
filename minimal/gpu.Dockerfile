@@ -42,6 +42,8 @@ RUN mkdir -p /opt/marian && touch /opt/marian/ignore-me
 # Build marian for CPU
 FROM builder as buildermarian
 ARG MARIAN_CPU_ARCH="znver2"
+ARG MARIAN_CUDA_80="ON"
+ARG MARIAN_CUDA_86="OFF"
 COPY marian-gpu marian-gpu
 RUN --mount=type=cache,target=/marian-gpu/build \
     cd marian-gpu \
@@ -69,8 +71,8 @@ RUN --mount=type=cache,target=/marian-gpu/build \
         -DCOMPILE_CUDA_SM60=OFF \
         -DCOMPILE_CUDA_SM70=OFF \
         -DCOMPILE_CUDA_SM75=OFF \
-        -DCOMPILE_CUDA_SM80=ON  \
-        -DCOMPILE_CUDA_SM86=OFF \
+        -DCOMPILE_CUDA_SM80=${MARIAN_CUDA_80} \
+        -DCOMPILE_CUDA_SM86=${MARIAN_CUDA_86} \
     && make -j2 marian_decoder marian_conv \
     && objcopy --only-keep-debug marian-decoder marian-decoder.dbg \
     && strip -s marian-decoder \
@@ -79,7 +81,7 @@ RUN --mount=type=cache,target=/marian-gpu/build \
 
 
 FROM builder AS builderparallel
-ARG MARIAN_CPU_ARCH="icelake-server"
+ARG MARIAN_CPU_ARCH="znver2"
 COPY preprocess/ /preprocess
 RUN --mount=type=cache,target=/preprocess/build rm -rf /preprocess/build/* \
     && cd /preprocess/build \
@@ -193,7 +195,7 @@ FROM alpine:3.14
 RUN apk add --no-cache xz numactl-tools bash
 ARG MODEL='model'
 # COPY --from=model /model/*.xz /model/
-COPY model/*.xz /model/
+COPY ${MODEL}/model.*.*.npz ${MODEL}/vocab.spm ${MODEL}/lex.s2t.gz /extracted-model/
 COPY marian-parallel.sh /usr/local/bin
 COPY run.sh /
 COPY --from=builderparallel /opt/marian/qparallel /usr/local/bin/
