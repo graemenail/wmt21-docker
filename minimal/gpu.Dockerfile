@@ -42,9 +42,9 @@ RUN mkdir -p /opt/marian && touch /opt/marian/ignore-me
 # Build marian for CPU
 FROM builder as buildermarian
 ARG MARIAN_CPU_ARCH="icelake-server"
-COPY marian-dev marian-gpu
+COPY marian-gpu marian-gpu
 RUN --mount=type=cache,target=/marian-gpu/build \
-    cd marian-cpu \
+    cd marian-gpu \
     && mkdir -p build \
     && cd build \
     && CFLAGS="-march=${MARIAN_CPU_ARCH} -pipe" \
