@@ -1,0 +1,9 @@
+[submodule "minimal/marian-dev"]
+	path = minimal/marian-dev
+	url = https://github.com/jelmervdl/marian-dev.git
+[submodule "minimal/preprocess"]
+	path = minimal/preprocess
+	url = https://github.com/jelmervdl/preprocess.git
+[submodule "minimal-gpu/marian-dev"]
+	path = minimal/marian-gpu
+	url = https://github.com/jelmervdl/marian-dev.git

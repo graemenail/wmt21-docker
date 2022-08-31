@@ -1,6 +1,5 @@
 model/
 !model/README.md
-marian*
 *.image
 *.image.*sum
 *.tar.*
