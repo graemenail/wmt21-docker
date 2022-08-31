@@ -10,6 +10,14 @@ docker build \
 	--progress=plain \
 	-t $tag "$@" .
 
-sacrebleu -t wmt19 -l en-de --echo src | docker run -i -e THROUGHPUT_SCRIPT=marian-parallel.sh -e THROUGHPUT_WORKERS=2 -e THROUGHPUT_THREADS=8 --rm $tag CPU-ALL throughput
+sacrebleu -t wmt19 -l en-de --echo src | docker run -i --rm \
+	--cap-add=SYS_PTRACE \
+	--security-opt seccomp=unconfined \
+	-e SKIP_NUMACTL=1 \
+	-e THROUGHPUT_SCRIPT=marian-parallel.sh \
+	-e THROUGHPUT_WORKERS=2 \
+	-e THROUGHPUT_THREADS=4 \
+	-e NUMA_NODE_COUNT=1 \
+	$tag CPU-ALL throughput
 
 docker save $tag | pigz -9c > $tag-$(date +'%Y%m%d%H%M%S').tar.gz
