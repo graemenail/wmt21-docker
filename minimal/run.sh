@@ -19,11 +19,6 @@ MARIAN_OPTIONS=(
   --maxi-batch-sort src
   --skip-cost
   --quiet-translation
-
-  --gemm-type intgemm8
-  --intgemm-options precomputed-alpha all-shifted
-  
-  #--transformer-head-dim 32
 )
 
 # Hardware
@@ -35,6 +30,8 @@ case $1 in
       --shortlist /extracted-model/lex.s2t.bin false
       --workspace 128
       --max-length-factor 2.5
+      --gemm-type intgemm8
+      --intgemm-options precomputed-alpha all-shifted
     )
     ;;
   "CPU-ALL")
@@ -44,10 +41,12 @@ case $1 in
       --shortlist /extracted-model/lex.s2t.bin false
       --workspace 128
       --max-length-factor 2.5
+      --gemm-type intgemm8
+      --intgemm-options precomputed-alpha all-shifted
     )
     ;;
-  *)
-    BINARY="marian-decoder-gpu"
+  "GPU")
+    BINARY="marian-decoder"
     MARIAN_OPTIONS+=(
       --devices 0
       --maxi-batch-sort src
