@@ -12,7 +12,6 @@ fi
 
 MARIAN_OPTIONS=(
   $(cat /extracted-model/*.txt)
-  -m /extracted-model/model.intgemm.alphas.bin
   -v /extracted-model/vocab.spm{,}
   -n 0.6
   -b 1
@@ -27,6 +26,7 @@ case $1 in
     BINARY="marian-decoder"
     MARIAN_OPTIONS+=(
       --cpu-threads 1
+      -m /extracted-model/model.intgemm.alphas.bin
       --shortlist /extracted-model/lex.s2t.bin false
       --workspace 512
       --max-length-factor 2.5
@@ -38,6 +38,7 @@ case $1 in
     BINARY="${THROUGHPUT_SCRIPT-marian-parallel.sh} ${THROUGHPUT_WORKERS-18} marian-decoder"
     MARIAN_OPTIONS+=(
       --cpu-threads ${THROUGHPUT_THREADS-36} # divided among the workers
+      -m /extracted-model/model.intgemm.alphas.bin
       --shortlist /extracted-model/lex.s2t.bin false
       --workspace 512
       --max-length-factor 2.5
@@ -48,8 +49,8 @@ case $1 in
   "GPU")
     BINARY="marian-decoder"
     MARIAN_OPTIONS+=(
+      -m /extracted-model/model.npz
       --devices 0
-      --maxi-batch-sort src
       --workspace 36000
       --max-length-factor 1.6
       --fp16
