@@ -35,9 +35,9 @@ case $1 in
     )
     ;;
   "CPU-ALL")
-    BINARY="marian-parallel.sh 4 marian-decoder"
+    BINARY="${THROUGHPUT_SCRIPT-marian-parallel.sh} ${THROUGHPUT_WORKERS-18} marian-decoder"
     MARIAN_OPTIONS+=(
-      --cpu-threads 36 # spread across 4 workers, so 9 in practice
+      --cpu-threads ${THROUGHPUT_THREADS-36} # divided among the workers
       --shortlist /extracted-model/lex.s2t.bin false
       --workspace 512
       --max-length-factor 2.5

@@ -51,7 +51,7 @@ RUN apt-get update \
 RUN mkdir -p /opt/marian && touch /opt/marian/ignore-me
 
 # Build marian for CPU
-FROM builder as buildercpu
+FROM builder as buildermarian
 ARG MARIAN_CPU_ARCH="icelake-server"
 COPY marian-dev marian-cpu
 RUN --mount=type=cache,target=/marian-cpu/build \
@@ -100,7 +100,7 @@ RUN --mount=type=cache,target=/preprocess/build rm -rf /preprocess/build/* \
 # Convert shortlist
 FROM builder AS shortlist
 ARG MODEL='model'
-COPY --from=buildercpu /opt/marian/marian-conv /
+COPY --from=buildermarian /opt/marian/marian-conv /
 COPY ${MODEL} /model
 RUN cd model && /marian-conv \
     --shortlist lex.s2t.gz 100 100 0 \
@@ -120,7 +120,7 @@ RUN --mount=type=cache,target=/root/.sacrebleu \
         sacrebleu -t $wmt -l $SRC-$TRG --echo src; \
     done > /alphatune.input
 
-COPY --from=buildercpu /opt/marian/marian-* /
+COPY --from=buildermarian /opt/marian/marian-* /
 COPY marian-dev/scripts/alphas/extract_stats.py /
 COPY ${MODEL} /model
 
@@ -178,7 +178,7 @@ RUN cd model \
 # Deploy
 # FROM base
 
-# COPY --from=buildercpu /opt/marian/* /
+# COPY --from=buildermarian /opt/marian/* /
 # COPY --from=builderparallel /opt/marian/* /
 # RUN rm -f /ignore-me
 
@@ -195,14 +195,17 @@ RUN cd model \
 # CMD ["/run.sh", "CPU-1", "latency"]
 
 FROM alpine:3.14
-RUN apk add --no-cache xz numactl-tools bash
+RUN apk add --no-cache xz numactl-tools bash parallel
 ARG MODEL='model'
 # COPY --from=model /model/*.xz /model/
 COPY model/*.xz /model/
 COPY marian-parallel.sh /usr/local/bin
 COPY run.sh /
 COPY --from=builderparallel /opt/marian/qparallel /usr/local/bin/
-COPY --from=buildercpu /opt/marian/marian-decoder /usr/local/bin/
+COPY --from=buildermarian /opt/marian/marian-decoder /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
 RUN chmod +x /run.sh
 ENTRYPOINT ["/run.sh"]
+
+RUN apk add --no-cache parallel
+COPY marian-parallel-alt.sh /usr/bin/local/marian-parallel.sh
